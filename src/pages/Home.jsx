@@ -32,12 +32,14 @@ export default function Home() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-12 text-center">
       {/* Header Section */}
-      <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-gray-900">Nutritious & Delicious</h1>
-      <p className="text-md md:text-lg text-gray-600 mb-8">
-        Explore our curated selection of healthy meals for every time of day.
+      <h1 className="text-3xl md:text-4xl font-bold mb-3 text-gray-900 tracking-tight">
+        Discover Nutritious & Delicious Meals
+      </h1>
+      <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto mb-6">
+        Explore a curated selection of balanced meals designed to keep you healthy and energized.
       </p>
 
-      {/* Display Breakfast, Lunch, and Dinner separately */}
+      {/* Display Meals by Category */}
       {Object.entries(meals).map(([category, mealList]) => (
         <MealSection key={category} category={category} meals={mealList} />
       ))}
@@ -61,11 +63,11 @@ function MealSection({ category, meals }) {
   };
 
   return (
-    <div className="mb-12">
+    <div className="mb-10">
       {/* Category Title */}
-      <h2 className="text-2xl font-bold text-green-600 mb-4">{category}</h2>
+      <h2 className="text-xl md:text-2xl font-semibold text-green-700 mb-4">{category}</h2>
 
-      {/* Scroll Buttons */}
+      {/* Scrollable Meal Section */}
       <div className="relative">
         <button
           className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-200 rounded-full shadow-md hover:bg-gray-300 transition z-10"
@@ -74,20 +76,18 @@ function MealSection({ category, meals }) {
           <FaArrowLeft />
         </button>
 
-        {/* Horizontal Scroll Container */}
         <div
           ref={scrollRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth px-6"
-          style={{ scrollBehavior: "smooth" }}
+          className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth px-6 hide-scrollbar"
         >
           {meals.map((meal, index) => (
             <div
               key={index}
-              className="w-64 min-w-[250px] bg-white shadow-md rounded-xl overflow-hidden snap-center"
+              className="w-56 min-w-[230px] bg-white shadow-md rounded-lg overflow-hidden snap-center"
             >
-              <img src={meal.img} alt={meal.name} className="w-full h-32 sm:h-40 object-cover" />
-              <div className="p-4">
-                <h3 className="text-sm sm:text-lg font-semibold">{meal.name}</h3>
+              <img src={meal.img} alt={meal.name} className="w-full h-28 sm:h-36 object-cover" />
+              <div className="p-3">
+                <h3 className="text-sm sm:text-lg font-medium">{meal.name}</h3>
                 <p className="text-gray-500 text-xs sm:text-sm">{meal.calories} cal • {meal.time}</p>
               </div>
             </div>
