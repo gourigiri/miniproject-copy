@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
+import { supabase } from "../supabaseClient"; // Ensure correct import
 
 export default function ReportUpload() {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (file) {
@@ -33,12 +35,31 @@ export default function ReportUpload() {
     }
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!file) {
       alert("Please select a file before uploading.");
       return;
     }
-    alert(`Uploading ${file.name}...`);
+
+    setUploading(true);
+    const fileExt = file.name.split(".").pop();
+    const filePath = `reports/${Date.now()}.${fileExt}`;
+
+    const { data, error } = await supabase.storage.from("reports").upload(filePath, file);
+
+    setUploading(false);
+
+    if (error) {
+      console.error("Upload error:", error.message);
+      alert("Upload failed. Try again.");
+      return;
+    }
+
+    // Get the public URL of the uploaded file
+    const { data: fileData } = supabase.storage.from("reports").getPublicUrl(filePath);
+    console.log("Uploaded file URL:", fileData.publicUrl);
+
+    alert("File uploaded successfully!");
   };
 
   return (
@@ -89,9 +110,12 @@ export default function ReportUpload() {
           {/* Upload Button */}
           <button
             onClick={handleUpload}
-            className="mt-4 w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition"
+            disabled={uploading}
+            className={`mt-4 w-full py-2 rounded-md transition ${
+              uploading ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 text-white hover:bg-green-600"
+            }`}
           >
-            Upload Report
+            {uploading ? "Uploading..." : "Upload Report"}
           </button>
         </div>
 
