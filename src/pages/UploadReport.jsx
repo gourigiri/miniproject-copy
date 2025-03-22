@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
-import Tesseract from "tesseract.js";
 import { supabase } from "../supabaseClient";
 
 export default function ReportUpload() {
@@ -11,6 +10,12 @@ export default function ReportUpload() {
   const [uploading, setUploading] = useState(false);
   const [extractingText, setExtractingText] = useState(false);
   const [message, setMessage] = useState("");
+  const [Tesseract, setTesseract] = useState(null);
+
+  // Dynamically import Tesseract.js to avoid Vercel build errors
+  useEffect(() => {
+    import("tesseract.js").then((mod) => setTesseract(mod));
+  }, []);
 
   useEffect(() => {
     if (file) {
@@ -100,6 +105,11 @@ export default function ReportUpload() {
       if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
 
       const blob = await response.blob();
+
+      if (!Tesseract) {
+        throw new Error("Tesseract.js failed to load.");
+      }
+
       const { data: ocrResult } = await Tesseract.recognize(blob, "eng");
       const extractedText = ocrResult?.text?.trim() || "";
 
