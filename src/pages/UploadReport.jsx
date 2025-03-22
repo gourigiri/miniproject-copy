@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
-import Tesseract from "tesseract.js";
+import { v4 as uuidv4 } from "uuid"; // Using UUID for unique user ID
+import fetch from "cross-fetch"; // Ensuring fetch works properly
 import { supabase } from "../supabaseClient";
 
 export default function ReportUpload() {
@@ -63,7 +64,7 @@ export default function ReportUpload() {
     console.log("Uploaded file URL:", imageUrl);
 
     // ✅ Generate a UUID
-    const userId = crypto.randomUUID();
+    const userId = uuidv4();
     console.log("Generated User ID:", userId);
 
     // ✅ Check if user exists in UserTable
@@ -100,6 +101,7 @@ export default function ReportUpload() {
       if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
 
       const blob = await response.blob();
+      const Tesseract = await import("tesseract.js"); // ✅ Dynamic Import
       const { data: ocrResult } = await Tesseract.recognize(blob, "eng");
       const extractedText = ocrResult?.text?.trim() || "";
 
